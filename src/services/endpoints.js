@@ -1,6 +1,9 @@
+// src/services/endpoints.js
 export const AUTH = {
-  LOGIN: "/auth/login"
+  LOGIN: "/auth/login",
+  REGISTER: "/auth/register",
 };
+
 
 export const FARMS = {
   LIST: "/farms",

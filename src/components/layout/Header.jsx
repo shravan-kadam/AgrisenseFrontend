@@ -4,7 +4,7 @@ export default function Header(){
   return (
     <header className="h-16 bg-white border-b border-gray-100 flex items-center px-6 justify-between">
       <div className="flex items-center gap-4">
-        <img src="/src/assets/logo.svg" alt="AgriSense 360" className="h-8"/>
+        <img src="/src/assets/logo.svg" alt=" AgriSense 360" className="h-8"/>
         <h1 className="text-2xl font-bold text-[#0f1724]"> {/* dynamic page title could go here */} </h1>
       </div>
 

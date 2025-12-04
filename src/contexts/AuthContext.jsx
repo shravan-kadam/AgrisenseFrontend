@@ -1,5 +1,5 @@
+// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
@@ -8,31 +8,46 @@ export function AuthProvider({ children }) {
     try {
       const raw = localStorage.getItem("as_user");
       return raw ? JSON.parse(raw) : null;
-    } catch (e) {
+    } catch {
       return null;
     }
   });
-  const navigate = useNavigate();
 
+  // keep auth state in sync with storage (optional)
   useEffect(() => {
-    // optional: validate token with backend on mount
+    const onStorage = () => {
+      try {
+        const raw = localStorage.getItem("as_user");
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch {
+        setUser(null);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  function signIn(payload) {
-    // payload = { token, user }
-    localStorage.setItem("as_token", payload.token);
-    localStorage.setItem("as_user", JSON.stringify(payload.user));
-    setUser(payload.user);
+  function signIn({ token, user }) {
+    try {
+      localStorage.setItem("as_token", token);
+      localStorage.setItem("as_user", JSON.stringify(user));
+    } catch (e) { console.warn(e); }
+    setUser(user);
   }
 
   function signOut() {
-    localStorage.removeItem("as_token");
-    localStorage.removeItem("as_user");
+    try {
+      localStorage.removeItem("as_token");
+      localStorage.removeItem("as_user");
+    } catch (e) { console.warn(e); }
     setUser(null);
-    navigate("/login");
+    // programmatic redirect using location (safe)
+    window.location.href = "/login";
   }
 
-  const value = { user, signIn, signOut, isAuthenticated: !!user };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, signIn, signOut, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
